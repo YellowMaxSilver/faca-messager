@@ -1,0 +1,7 @@
+express
+typescript
+firebase adimim
+create react app faca-messager --template typescript
+vite create  project  --template typescript
+npm install vite
+cors
