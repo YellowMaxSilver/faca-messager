@@ -1,14 +1,19 @@
-import './style.css';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.ts';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+require("./style.css");
+const typescript_svg_1 = __importDefault(require("./typescript.svg"));
+const vite_svg_1 = __importDefault(require("/vite.svg"));
+const counter_ts_1 = require("./counter.ts");
 document.querySelector('#app').innerHTML = `
   <div>
     <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
+      <img src="${vite_svg_1.default}" class="logo" alt="Vite logo" />
     </a>
     <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
+      <img src="${typescript_svg_1.default}" class="logo vanilla" alt="TypeScript logo" />
     </a>
     <h1>Vite + TypeScript</h1>
     <div class="card">
@@ -19,4 +24,4 @@ document.querySelector('#app').innerHTML = `
     </p>
   </div>
 `;
-setupCounter(document.querySelector('#counter'));
+(0, counter_ts_1.setupCounter)(document.querySelector('#counter'));

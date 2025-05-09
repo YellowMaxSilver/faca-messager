@@ -9,12 +9,26 @@
     <h1>Welcome to faca Messager</h1>
     
     <form id="loginSection">
-        <h2>Sign in or Sign Up</h2>
+        <h2>Sign in</h2>
         <input type="email" placeholder="email" id="emailInput" autocomplete="off"/>
         <input type="password" placeholder="password" id="passwordInput" autocomplete="off"/>
         <div><button type="submit">Sign in</button></div>
     </form>
 
+    <form id="signUpSection">
+      <h2>Sign Up</h2>
+      <div style="display: flex;align-items: center;">
+        <input type="text" placeholder="Name" id="nameInputSignUp" autocomplete="off"/>
+        <input type="email" placeholder="Email" id="emailInputSignUp" autocomplete="off"/>
+        <input type="password" placeholder="Password" id="passwordInputSignUp" autocomplete="off"/>
+        <textarea type="text" placeholder="Description" id="descriptionInputSignUp" autocomplete="off"></textarea>
+      </div>
+      <h4 id="signUpErrorMessage" style="color: red;display: none;">error menssage</h4>
+      <br/>
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <a href="faca.html">faca</a>
     <script type="module" src="./src/script.ts"></script>
 </body>
 </html>

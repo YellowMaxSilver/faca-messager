@@ -1,8 +1,11 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.storage = exports.firestore = exports.auth = void 0;
+const app_1 = require("firebase/app");
+const analytics_1 = require("firebase/analytics");
+const auth_1 = require("firebase/auth");
+const firestore_1 = require("firebase/firestore");
+const storage_1 = require("firebase/storage");
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
@@ -17,9 +20,9 @@ const firebaseConfig = {
     measurementId: "G-GD1MWYJLRG"
 };
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth();
-export const firestore = getFirestore();
-export const storage = getStorage();
-export default app;
+const app = (0, app_1.initializeApp)(firebaseConfig);
+const analytics = (0, analytics_1.getAnalytics)(app);
+exports.auth = (0, auth_1.getAuth)();
+exports.firestore = (0, firestore_1.getFirestore)();
+exports.storage = (0, storage_1.getStorage)();
+exports.default = app;

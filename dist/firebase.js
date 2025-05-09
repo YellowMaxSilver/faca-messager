@@ -1,25 +1,14 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-    apiKey: "AIzaSyAGmlk65hzEOTygeaeqQJcD56XXQ074pRY",
-    authDomain: "reacttest-ac3fe.firebaseapp.com",
-    projectId: "reacttest-ac3fe",
-    storageBucket: "reacttest-ac3fe.firebasestorage.app",
-    messagingSenderId: "391176630566",
-    appId: "1:391176630566:web:73123de035a39736d8d1e7",
-    measurementId: "G-GD1MWYJLRG"
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth();
-export const firestore = getFirestore();
-export const storage = getStorage();
-export default app;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = void 0;
+const firebase_admin_1 = __importDefault(require("firebase-admin"));
+const reacttest_ac3fe_firebase_adminsdk_fbsvc_3c5185b495_json_1 = __importDefault(require("./reacttest-ac3fe-firebase-adminsdk-fbsvc-3c5185b495.json"));
+firebase_admin_1.default.initializeApp({
+    credential: firebase_admin_1.default.credential.cert(reacttest_ac3fe_firebase_adminsdk_fbsvc_3c5185b495_json_1.default),
+});
+exports.default = firebase_admin_1.default;
+const db = firebase_admin_1.default.firestore();
+exports.db = db;
