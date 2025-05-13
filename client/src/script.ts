@@ -1,8 +1,14 @@
+import { data } from "react-router";
 import { auth} from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
+import { verifySession } from "./verifySession";
+
 console.log('iniciado');
 
+
+var userId = await verifySession();
+console.log(userId);
 
 async function signIn(email:string, password:string){
     //const user;
@@ -12,8 +18,9 @@ async function signIn(email:string, password:string){
             const userCredentials = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredentials.user.getIdToken();
 
-            const res = await fetch("http://localhost:5000/api/signIn",{
+            const res = await fetch("/api/signIn",{
                 method:"POST",
+                credentials: 'include',
                 headers:{
                     "Authorization": `Bearer ${token}`,
                     "Content-Type":"application/json"
@@ -23,11 +30,14 @@ async function signIn(email:string, password:string){
 
             console.log(token);
             console.log("backend awswers: ",await res.json());
+            //window.open("/home");
         }catch(error){
             console.log("falha ao logar: "+error);
         }
     }
 }
+
+
 
 const form = document.getElementById('loginSection') as HTMLFormElement;
 form.addEventListener("submit",(e)=>{
@@ -53,7 +63,7 @@ async function signUp(email:string, password:string, name:string, description:st
     try{
         const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
         const token = await userCredentials.user.getIdToken();
-        const res = await fetch('http://localhost:5000/api/signUp',{
+        const res = await fetch('/api/signUp',{
             method:'POST',
             headers: {
                 Authorization:`Bearer ${token}`,

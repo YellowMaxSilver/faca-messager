@@ -11,7 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const firebase_1 = require("./firebase");
 const auth_1 = require("firebase/auth");
+const verifySession_1 = require("./verifySession");
 console.log('iniciado');
+var userId = await (0, verifySession_1.verifySession)();
+console.log(userId);
 function signIn(email, password) {
     return __awaiter(this, void 0, void 0, function* () {
         //const user;
@@ -20,8 +23,9 @@ function signIn(email, password) {
             try {
                 const userCredentials = yield (0, auth_1.signInWithEmailAndPassword)(firebase_1.auth, email, password);
                 const token = yield userCredentials.user.getIdToken();
-                const res = yield fetch("http://localhost:5000/api/signIn", {
+                const res = yield fetch("/api/signIn", {
                     method: "POST",
+                    credentials: 'include',
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -30,6 +34,7 @@ function signIn(email, password) {
                 });
                 console.log(token);
                 console.log("backend awswers: ", yield res.json());
+                //window.open("/home");
             }
             catch (error) {
                 console.log("falha ao logar: " + error);
@@ -56,7 +61,7 @@ function signUp(email, password, name, description) {
         try {
             const userCredentials = yield (0, auth_1.createUserWithEmailAndPassword)(firebase_1.auth, email, password);
             const token = yield userCredentials.user.getIdToken();
-            const res = yield fetch('http://localhost:5000/api/signUp', {
+            const res = yield fetch('/api/signUp', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,

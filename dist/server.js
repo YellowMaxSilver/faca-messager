@@ -46,39 +46,118 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const authmiddleware_1 = __importDefault(require("./authmiddleware"));
 const firebase_1 = __importStar(require("./firebase"));
-const app = (0, express_1.default)();
-const port = 5000;
+const fs_1 = __importDefault(require("fs"));
+const vite_1 = require("vite");
+//import cookieParse from 'cookie-parser';
+const isProd = process.env.NODE_ENV === 'production';
+function createServer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const app = (0, express_1.default)();
+        const port = 5000;
+        const cookieParse = require('cookie-parser');
+        app.use(cookieParse());
+        app.use(express_1.default.json());
+        app.use(express_1.default.static(path_1.default.join(__dirname, './dist')));
+        const vite = yield (0, vite_1.createServer)({
+            server: { middlewareMode: true },
+            root: path_1.default.resolve(__dirname, './client'),
+            appType: 'custom'
+        });
+        app.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const url = req.originalUrl;
+            try {
+                const templatePath = path_1.default.resolve(__dirname, './client/index.html');
+                let template = fs_1.default.readFileSync(templatePath, 'utf-8');
+                template = yield vite.transformIndexHtml(url, template);
+                res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+            }
+            catch (e) {
+                res.send('not found');
+            }
+        }));
+        app.get('/:page', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const page = req.params.page;
+            const url = req.originalUrl;
+            try {
+                const templatePath = path_1.default.resolve(__dirname, `./client/pages/${page}.html`);
+                let template = fs_1.default.readFileSync(templatePath, 'utf-8');
+                template = yield vite.transformIndexHtml(url, template);
+                res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+            }
+            catch (e) {
+                res.send('not found');
+            }
+        }));
+        app.post('/api/signIn', authmiddleware_1.default, (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const token = req.body["idToken"];
+            const expiresIn = 60 * 60 * 24 * 1000;
+            try {
+                const sessionCookie = yield firebase_1.default.auth().createSessionCookie(token, { expiresIn });
+                res.cookie('session', sessionCookie, {
+                    maxAge: expiresIn,
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'strict'
+                });
+                res.status(200).json({ message: `login sucesciful` });
+            }
+            catch (erro) {
+                console.error("Error to create Cookie");
+                res.status(401).json({ message: "Unathorized" });
+            }
+        }));
+        app.post('/api/readCookie', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const sessionCookie = req.cookies.session;
+                const decodedClains = yield firebase_1.default.auth().verifySessionCookie(sessionCookie, true);
+                res.status(200).json({ message: decodedClains.uid });
+            }
+            catch (error) {
+                res.status(401).json({ message: null });
+            }
+        }));
+        app.post('/api/signUp', authmiddleware_1.default, (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const token = req.body["idToken"];
+            try {
+                const { name, email, password, description } = req.body;
+                const user = yield firebase_1.default.auth().getUserByEmail(email);
+                const uid = yield user.uid;
+                const docRef = yield firebase_1.db.collection('usersInfo').add({ description, email, name, uid });
+                res.status(200).json({ message: `suces to create account ${token} && the firestore: ${docRef.id}` });
+            }
+            catch (error) {
+                res.status(500).json({ message: `error to create user: ${error}` });
+            }
+        }));
+        app.use(vite.middlewares);
+        app.listen(port, () => {
+            console.log(`Server running in the port ${port}`);
+        });
+    });
+}
+createServer();
 //const __filename = fileURLToPath(import.meta.url);
 //const __dirname = path.dirname(__filename);
 //app.use(express.static(path.join(__dirname,'public')));
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-app.get('/:page', (req, res) => {
-    const page = req.params.page;
-});
-app.post('/api/signIn', authmiddleware_1.default, (req, res) => {
-    const token = req.body["idToken"];
-    res.status(200).json({ message: `login sucesciful${token}` });
-});
-app.post('/api/signUp', authmiddleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.body["idToken"];
-    try {
-        const { name, email, password, description } = req.body;
-        const user = yield firebase_1.default.auth().getUserByEmail(email);
-        const uid = yield user.uid;
-        const docRef = yield firebase_1.db.collection('usersInfo').add({ description, email, name, uid });
-        res.status(200).json({ message: `suces to create account ${token} && the firestore: ${docRef.id}` });
-    }
-    catch (error) {
-        res.status(500).json({ message: `error to create user: ${error}` });
-    }
-}));
-app.listen(port, () => {
-    console.log(`Server running in the port ${port}`);
-});
+// app.post('/api/signIn',verifyFireToken,(req,res)=>{
+//     const token = req.body["idToken"];
+//     res.status(200).json({message:`login sucesciful${token}`});
+// })
+// app.post('/api/signUp',verifyFireToken,async (req,res)=>{
+//     const token = req.body["idToken"];
+//     try{
+//         const {name, email, password, description} = req.body;
+//         const user = await admin.auth().getUserByEmail(email);
+//         const uid= await user.uid;
+//         const docRef = await db.collection('usersInfo').add({ description, email, name, uid})
+//         res.status(200).json({message:`suces to create account ${token} && the firestore: ${docRef.id}`});
+//     }catch(error){
+//         res.status(500).json({message:`error to create user: ${error}`});
+//     }
+// });
 /*app.get('/usuarios', async (req, res) => {
     try {
       const snapshot = await db.collection('usuarios').get();
