@@ -1,4 +1,3 @@
-import { data } from "react-router";
 import { auth} from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
@@ -8,6 +7,11 @@ console.log('iniciado');
 
 
 var userId = await verifySession();
+if(userId == null){
+    console.log("not loged");
+}else{
+    console.log("already loged");
+}
 console.log(userId);
 
 async function signIn(email:string, password:string){

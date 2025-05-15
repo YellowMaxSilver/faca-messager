@@ -107,6 +107,27 @@ async function createServer(){
         }
     });
 
+    app.post('/api/searchAboutUser',async (req,res)=>{
+        const userId = req.body.userId;
+        try{
+            const userRef = admin.firestore().collection('usersInfo');
+            const querySnapshot = await userRef.where('uid','==',userId).get();
+
+            if(querySnapshot.empty){
+                res.status(404).json({message:"error: not found"});
+            }else{
+                const results:any = [];
+                querySnapshot.forEach(doc =>{
+                    results.push({id: doc.id, ...doc.data()});
+                })
+
+                res.status(200).json({message:results})
+            }
+        }catch(e){
+            res.status(500).json({message:"error in the server"});
+        }
+    })
+
     app.use(vite.middlewares);
 
     app.listen(port,()=>{

@@ -132,6 +132,26 @@ function createServer() {
                 res.status(500).json({ message: `error to create user: ${error}` });
             }
         }));
+        app.post('/api/searchAboutUser', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const userId = req.body.userId;
+            try {
+                const userRef = firebase_1.default.firestore().collection('usersInfo');
+                const querySnapshot = yield userRef.where('uid', '==', userId).get();
+                if (querySnapshot.empty) {
+                    res.status(404).json({ message: "error: not found" });
+                }
+                else {
+                    const results = [];
+                    querySnapshot.forEach(doc => {
+                        results.push(Object.assign({ id: doc.id }, doc.data()));
+                    });
+                    res.status(200).json({ message: results });
+                }
+            }
+            catch (e) {
+                res.status(500).json({ message: "error in the server" });
+            }
+        }));
         app.use(vite.middlewares);
         app.listen(port, () => {
             console.log(`Server running in the port ${port}`);

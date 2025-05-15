@@ -14,6 +14,12 @@ const auth_1 = require("firebase/auth");
 const verifySession_1 = require("./verifySession");
 console.log('iniciado');
 var userId = await (0, verifySession_1.verifySession)();
+if (userId == null) {
+    console.log("not loged");
+}
+else {
+    console.log("already loged");
+}
 console.log(userId);
 function signIn(email, password) {
     return __awaiter(this, void 0, void 0, function* () {
