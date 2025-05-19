@@ -44,3 +44,11 @@
     right: 0;
     margin-right: 40px;
 }
+
+.addContactWindow{
+    position: absolute;
+    background-color: var(--bassBackgroundColor);
+    width: 60%;
+    height: 60vh;
+    display: none;
+}

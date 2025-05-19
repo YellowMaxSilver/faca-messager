@@ -14,6 +14,7 @@ console.log('iniciado');
 var userId = await (0, verifySession_1.verifySession)();
 if (userId == null) {
     console.log("not loged");
+    window.location.href = '/';
 }
 else {
     console.log("already loged");
@@ -45,4 +46,23 @@ function searchUsersInfo(id) {
 function setInfosOnPage() {
     const accountNameText = document.getElementById('accountName');
     accountNameText.innerText = name;
+}
+document.getElementById('newContactButton').addEventListener('click', openAddContactWindow);
+function openAddContactWindow() {
+    let contactWindow = document.getElementById('addContactWindow');
+    contactWindow.style = "display:flex";
+    const addContactEmail = document.getElementById('addContactEmail');
+    const addContactButton = document.getElementById('addContactButton');
+    addContactButton.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+        console.log(addContactEmail.value);
+        //sear if exist some one with email in userInfo
+        const res = yield fetch('api/addContactByEmail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ownId: userId, email: addContactEmail.value })
+        });
+        console.log("backend response", yield res.json());
+    }));
 }

@@ -152,6 +152,56 @@ function createServer() {
                 res.status(500).json({ message: "error in the server" });
             }
         }));
+        function verifyUserExistence(req, res, next) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const email = req.body.email;
+                try {
+                    const userRef = firebase_1.default.firestore().collection('usersInfo');
+                    const querySnapshot = yield userRef.where('email', '==', email).get();
+                    if (querySnapshot.empty) {
+                        res.status(401).json({ message: `user with email ${email} not found.` });
+                    }
+                    else {
+                        const result = [];
+                        querySnapshot.forEach(doc => {
+                            result.push(Object.assign({ id: doc.id }, doc.data()));
+                        });
+                        req.body["contactUid"] = result[0].uid;
+                        req.body["contactName"] = result[0].name;
+                        next();
+                    }
+                }
+                catch (e) {
+                    res.status(500).json({ message: "Network error: error to search user" });
+                }
+            });
+        }
+        app.post('/api/addContactbyEmail', verifyUserExistence, (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const ownId = req.body.ownId;
+            const email = req.body.email;
+            const contactUid = req.body["contactUid"];
+            const contactName = req.body["contactName"];
+            try {
+                const userRef = firebase_1.default.firestore().collection('contacts');
+                const querySnapshot = yield userRef.where('MainUid', '==', ownId).get();
+                if (querySnapshot.empty) {
+                    //nothing found
+                    //res.status(500).json({message:`your user were not found`});
+                    let MainUid = ownId;
+                    let contact = contactUid;
+                    const docRef = yield firebase_1.db.collection('contacts').add({ MainUid, [email]: contact });
+                    res.status(200).json({ message: `We found the contact id: ${contact}` });
+                    //const teste = await db.collection('contacts').doc('1cWXnhtu8wlgSKuHu7ag').update({});
+                }
+                else {
+                    //something found
+                    res.status(200).json({ message: `your contact was found...` });
+                }
+            }
+            catch (e) {
+                res.status(500).json({ message: "Network Error: error to found you our account" });
+            }
+        }));
         app.use(vite.middlewares);
         app.listen(port, () => {
             console.log(`Server running in the port ${port}`);

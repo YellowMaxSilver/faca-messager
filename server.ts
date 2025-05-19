@@ -1,5 +1,5 @@
 import { error } from 'console';
-import express from 'express';
+import express, { NextFunction, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
@@ -9,6 +9,7 @@ import fs from 'fs'
 
 import { createServer as createViteServer } from 'vite';
 import { messaging } from 'firebase-admin';
+import { RequestHandler } from 'express';
 
 //import cookieParse from 'cookie-parser';
 
@@ -125,6 +126,55 @@ async function createServer(){
             }
         }catch(e){
             res.status(500).json({message:"error in the server"});
+        }
+    })
+
+    async function verifyUserExistence(req:any,res:any,next:NextFunction){
+        const email = req.body.email;
+
+        try{
+            const userRef = admin.firestore().collection('usersInfo');
+            const querySnapshot = await userRef.where('email','==',email).get();
+            if(querySnapshot.empty){
+                res.status(401).json({message:`user with email ${email} not found.`});
+            }else{
+                const result:any = [];
+                querySnapshot.forEach(doc =>{
+                    result.push({id: doc.id, ... doc.data()});
+                })
+                req.body["contactUid"] = result[0].uid;
+                req.body["contactName"] = result[0].name;
+                next();
+            }
+        }catch(e){
+            res.status(500).json({message:"Network error: error to search user"});
+        }
+    }
+
+    app.post('/api/addContactbyEmail',verifyUserExistence,async (req,res)=>{
+        const ownId = req.body.ownId;
+        const email = req.body.email;
+        const contactUid = req.body["contactUid"];
+        const contactName = req.body["contactName"];
+
+        try{
+            const userRef = admin.firestore().collection('contacts');
+            const querySnapshot = await userRef.where('MainUid','==',ownId).get();
+            if(querySnapshot.empty){
+                //nothing found
+                //res.status(500).json({message:`your user were not found`});
+                let MainUid = ownId;
+                let contact = contactUid;
+                const docRef = await db.collection('contacts').add({ MainUid, [email]:contact});
+                res.status(200).json({message:`We found the contact id: ${contact}`});
+                //const teste = await db.collection('contacts').doc('1cWXnhtu8wlgSKuHu7ag').update({});
+            }else{
+                //something found
+                res.status(200).json({message:`your contact was found...`});
+            }
+
+        }catch(e){
+            res.status(500).json({message:"Network Error: error to found you our account"})
         }
     })
 

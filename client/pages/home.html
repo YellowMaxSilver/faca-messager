@@ -8,6 +8,14 @@
 </head>
 <body>
     <script type="module" src="../src/home.ts"></script>
+
+    <div class="addContactWindow" id="addContactWindow">
+        <div>
+        <input id="addContactEmail" placeholder="contact email" type="email" required autocomplete="off">
+        <button id="addContactButton">add</button>
+        </div>
+    </div>
+
     <div class="topBar">
         <h3 class="normalText">Faca Messager</h3>
 
@@ -19,7 +27,7 @@
 
     <div class="contactsSection">
 
-        <div class="contactsBox">
+        <div class="contactsBox" id="newContactButton">
             <h3 class="normalText">New</h3>
         </div>
 
