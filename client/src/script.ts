@@ -34,6 +34,7 @@ async function signIn(email:string, password:string){
 
             console.log(token);
             console.log("backend awswers: ",await res.json());
+            setTimeout(()=>{window.location.href = "/home";},1000);
             //window.open("/home");
         }catch(error){
             console.log("falha ao logar: "+error);
@@ -76,6 +77,7 @@ async function signUp(email:string, password:string, name:string, description:st
             body: JSON.stringify({email:email,password:password,name:name,description:description})
         })
         console.log("backend answers:",await res.json());
+        setTimeout(()=>{window.location.href = "/home";},1000);
     }catch(error){
         console.log("error to create an account: "+error);
         errorText.innerText = "error to create account. try again later";

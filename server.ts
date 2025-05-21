@@ -77,7 +77,7 @@ async function createServer(){
 
             res.status(200).json({message:`login sucesciful`});
         }catch(erro){
-            console.error("Error to create Cookie");
+            console.error("Error to create Cookie: "+erro);
             res.status(401).json({message:"Unathorized"});
         }
 
@@ -165,11 +165,13 @@ async function createServer(){
                 //res.status(500).json({message:`your user were not found`});
                 let MainUid = ownId;
                 let contact = contactUid;
-                const docRef = await db.collection('contacts').add({ MainUid, [email]:contact});
+                const docRef = await db.collection('contacts').add({ MainUid, [contactName]:contact});
                 res.status(200).json({message:`We found the contact id: ${contact}`});
                 //const teste = await db.collection('contacts').doc('1cWXnhtu8wlgSKuHu7ag').update({});
             }else{
                 //something found
+                const docId = (querySnapshot.docs[0]).id;
+                await db.collection('contacts').doc(docId).update({[contactName]:contactUid});
                 res.status(200).json({message:`your contact was found...`});
             }
 
@@ -177,6 +179,27 @@ async function createServer(){
             res.status(500).json({message:"Network Error: error to found you our account"})
         }
     })
+
+    app.post('/api/searchContacts',async (req,res)=>{
+        const userId = req.body.userId;
+
+        try{
+            const userRef = admin.firestore().collection('contacts');
+            const querySnapshot = await userRef.where('MainUid','==',userId).get();
+            if(!querySnapshot.empty){
+                const result:any = [];
+                querySnapshot.forEach((doc)=>{
+                    result.push({id: doc.id, ...doc.data()});
+                })
+                res.status(200).json({message:result[0]});
+            }else{
+                res.status(200).json({message:"no contacts found"})
+            }
+        }catch(e){
+            res.status(500).json({message:"Network error: failed to connect to database."})
+            console.error("Network error: faled to connect to firebase firestore");
+        }
+    });
 
     app.use(vite.middlewares);
 

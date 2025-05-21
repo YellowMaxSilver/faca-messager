@@ -9,9 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//import { json } from "express";
 const verifySession_1 = require("./verifySession");
 console.log('iniciado');
-var userId = await (0, verifySession_1.verifySession)();
+var name;
+//auto-start function
+const userId = await (0, verifySession_1.verifySession)();
 if (userId == null) {
     console.log("not loged");
     window.location.href = '/';
@@ -21,7 +24,7 @@ else {
     searchUsersInfo(userId);
 }
 console.log(userId);
-var name;
+searchContacts();
 function searchUsersInfo(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -64,5 +67,18 @@ function openAddContactWindow() {
             body: JSON.stringify({ ownId: userId, email: addContactEmail.value })
         });
         console.log("backend response", yield res.json());
+        contactWindow.style = "display:none";
     }));
+}
+function searchContacts() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield fetch('api/searchContacts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: userId }),
+        });
+        console.log(yield res.json());
+    });
 }

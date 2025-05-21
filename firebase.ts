@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import ServiceAccount from './reacttest-ac3fe-firebase-adminsdk-fbsvc-3c5185b495.json';
+import ServiceAccount from './reacttest-ac3fe-firebase-adminsdk-fbsvc-0c6e87c5da.json';
 
 admin.initializeApp({
     credential: admin.credential.cert(ServiceAccount as admin.ServiceAccount),

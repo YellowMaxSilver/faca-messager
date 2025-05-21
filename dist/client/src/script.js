@@ -40,6 +40,7 @@ function signIn(email, password) {
                 });
                 console.log(token);
                 console.log("backend awswers: ", yield res.json());
+                setTimeout(() => { window.location.href = "/home"; }, 1000);
                 //window.open("/home");
             }
             catch (error) {
@@ -76,6 +77,7 @@ function signUp(email, password, name, description) {
                 body: JSON.stringify({ email: email, password: password, name: name, description: description })
             });
             console.log("backend answers:", yield res.json());
+            setTimeout(() => { window.location.href = "/home"; }, 1000);
         }
         catch (error) {
             console.log("error to create an account: " + error);

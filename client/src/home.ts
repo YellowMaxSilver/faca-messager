@@ -1,9 +1,12 @@
+//import { json } from "express";
 import { verifySession } from "./verifySession";
 
 console.log('iniciado');
 
+var name:string;
 
-var userId = await verifySession();
+//auto-start function
+const userId = await verifySession();
 if(userId == null){
     console.log("not loged");
     window.location.href = '/';
@@ -13,7 +16,8 @@ if(userId == null){
 }
 console.log(userId);
 
-var name:string;
+searchContacts();
+
 
 async function searchUsersInfo(id:string){
     try{
@@ -63,5 +67,18 @@ function openAddContactWindow(){
         })
 
         console.log("backend response",await res.json())
+        contactWindow.style = "display:none";
     })
+}
+
+async function searchContacts(){
+    const res = await fetch('api/searchContacts',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userId:userId}),
+    })
+
+    console.log(await res.json());
 }
