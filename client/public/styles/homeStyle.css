@@ -1,16 +1,4 @@
-:root{
-    --bassBackgroundColor: #c2c2c2;
-}
-
-.topBar{
-    width: 100%;
-    height: 50px;
-    position: absolute;
-    top: 0;left: 0;
-    display: flex;
-    align-items: center;
-    background-color: var(--bassBackgroundColor);
-}
+@import url(style.css);
 
 .normalText{
     font-family: Arial, Helvetica, sans-serif;
@@ -33,17 +21,7 @@
 }
 
 
-.accountBox{
-    width: 100px;
-    height: 40px;
-    border: 3px solid white;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    position: absolute;
-    right: 0;
-    margin-right: 40px;
-}
+
 
 .addContactWindow{
     position: absolute;

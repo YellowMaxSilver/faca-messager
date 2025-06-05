@@ -1,4 +1,5 @@
 //import { json } from "express";
+import { createElement } from "react";
 import { verifySession } from "./verifySession";
 
 console.log('iniciado');
@@ -13,10 +14,9 @@ if(userId == null){
 }else{
     console.log("already loged");
     searchUsersInfo(userId);
+    searchContacts();
 }
 console.log(userId);
-
-searchContacts();
 
 
 async function searchUsersInfo(id:string){
@@ -80,5 +80,21 @@ async function searchContacts(){
         body: JSON.stringify({userId:userId}),
     })
 
-    console.log(await res.json());
+   // console.log(await res.json());
+   res.json().then((data)=>{
+    const section = document.getElementById('contactsSection') as HTMLElement;
+    const array = Object.entries(data.message).map(([key,value])=>({key,value}));
+    console.log(array);
+    //2
+    for(let i = 2;i < array.length ;i++){
+      console.log("contact:"+array[i].key+". his id"+array[i].value);  
+
+      const element = document.createElement('div');
+      element.innerHTML = `<a href="message?c=`+array[i].value+`"><div class="contactsBox" style="margin-top:20px">
+            <h3 class="normalText">`+array[i].key+`</h3>
+        </div></a>`;
+        
+      section.appendChild(element);
+    }
+   }).catch(err=>console.error(err))
 }

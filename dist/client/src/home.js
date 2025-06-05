@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import { json } from "express";
 const verifySession_1 = require("./verifySession");
 console.log('iniciado');
 var name;
@@ -22,9 +21,9 @@ if (userId == null) {
 else {
     console.log("already loged");
     searchUsersInfo(userId);
+    searchContacts();
 }
 console.log(userId);
-searchContacts();
 function searchUsersInfo(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -79,6 +78,20 @@ function searchContacts() {
             },
             body: JSON.stringify({ userId: userId }),
         });
-        console.log(yield res.json());
+        // console.log(await res.json());
+        res.json().then((data) => {
+            const section = document.getElementById('contactsSection');
+            const array = Object.entries(data.message).map(([key, value]) => ({ key, value }));
+            console.log(array);
+            //2
+            for (let i = 2; i < array.length; i++) {
+                console.log("contact:" + array[i].key + ". his id" + array[i].value);
+                const element = document.createElement('div');
+                element.innerHTML = `<a href="message?c=` + array[i].value + `"><div class="contactsBox" style="margin-top:20px">
+            <h3 class="normalText">` + array[i].key + `</h3>
+        </div></a>`;
+                section.appendChild(element);
+            }
+        }).catch(err => console.error(err));
     });
 }
